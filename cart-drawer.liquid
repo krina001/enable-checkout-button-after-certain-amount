@@ -1,0 +1,50 @@
+Add disabled attribute in checkout button div.
+Add this id and attribute in price div [ id="cart-total" data-cart-subtotal-price="{{ cart.total_price | divided_by: 100 }}" ]
+
+Add below script in bottom of the file.
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  updateCheckoutButton();
+  updateCartListeners();
+});
+  
+function updateCheckoutButton() {
+      const checkoutButton = document.querySelector('.cart__checkout-button');
+  const cartTotalElement = document.getElementById('cart-total');
+    const cartTotal = parseFloat(cartTotalElement.getAttribute('data-cart-subtotal-price'));
+
+    if (cartTotal >= 1000) {
+        checkoutButton.removeAttribute('disabled');
+        checkoutButton.classList.remove('disabled'); // Adjust based on your theme's styling
+    } else {
+        checkoutButton.setAttribute('disabled', 'disabled');
+        checkoutButton.classList.add('disabled'); // Adjust based on your theme's styling
+    }
+}
+  
+function fetchCartTotal() {
+  const cartTotalElement = document.getElementById('cart-total');
+    fetch('/cart.js')
+    .then(response => response.json())
+    .then(data => {
+        const total = data.total_price / 100;
+        cartTotalElement.setAttribute('data-cart-subtotal-price', total);
+        updateCheckoutButton();
+    })
+    .catch(error => console.error('Error fetching cart:', error));
+}
+  
+function updateCartListeners(){
+  const { routes: e } = window.MinimogSettings;
+  document.addEventListener(`${e.cart}?section_id=cart-template`, fetchCartTotal);
+
+  document.querySelectorAll('.m-add-to-cart').forEach(button => {
+    button.addEventListener('click', function () {
+      setTimeout(() => {
+          document.dispatchEvent(new Event(`${e.cart}?section_id=cart-template`));
+      }, 500);
+    });
+  });
+}
+</script>
