@@ -1,0 +1,18 @@
+{% comment %} Note: this method only works in only shopify default theme. {% endcomment %}
+{% comment %} Add below code in price subtotal div {% endcomment %}
+
+     {% assign order_limit = 100000 %}
+            {% assign order_amount = cart.total_price %}
+
+            <!-- Remove currency symbol and commas -->
+            {% assign order_amount_cleaned = order_amount
+            | replace: 'Rs.', ''
+            | replace: ',', ''
+            | replace: ' ', ''
+            %}
+
+            <!-- Convert to integer for comparison -->
+            {% assign final_order_amount = order_amount_cleaned | plus: 0 %}
+
+
+  {% comment %} Add this if condition in check out button div {% if final_order_amount <= order_limit %} disabled {% endif %} {% endcomment %}
